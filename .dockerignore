@@ -1,0 +1,14 @@
+.git
+.claude
+.vscode
+.idea
+__pycache__
+*.pyc
+*.egg-info
+data/
+logs/
+Infected_Files_Report.txt
+package_json.txt
+*.md
+LICENSE
+.gitignore

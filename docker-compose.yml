@@ -1,0 +1,69 @@
+services:
+  # MCP Server — connect via Claude Code or Claude Desktop
+  mcp-server:
+    build: .
+    container_name: cybersec-mcp
+    command: python -m scanner.server
+    volumes:
+      - scanner-data:/app/data
+      - scanner-logs:/app/logs
+      - /:/host:ro  # Read-only mount of host filesystem for scanning
+    restart: unless-stopped
+    networks:
+      - scanner-net
+
+  # CLI — run one-off scan commands
+  cli:
+    build: .
+    container_name: cybersec-cli
+    entrypoint: python -m scanner.cli
+    volumes:
+      - scanner-data:/app/data
+      - scanner-logs:/app/logs
+      - /:/host:ro
+    profiles:
+      - cli
+    networks:
+      - scanner-net
+
+  # API Agent — scheduled/scripted security scans
+  api-agent:
+    build: .
+    container_name: cybersec-api-agent
+    command: python -m agent.api_agent "${AGENT_INSTRUCTION:-Perform a quick security scan}"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - scanner-data:/app/data
+      - scanner-logs:/app/logs
+      - /:/host:ro
+    profiles:
+      - agent
+    networks:
+      - scanner-net
+
+  # Autonomous Agent — long-running security monitoring
+  sdk-agent:
+    build: .
+    container_name: cybersec-sdk-agent
+    command: python -m agent.sdk_agent --task "${AGENT_TASK:-Monitor systems for security issues}"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - scanner-data:/app/data
+      - scanner-logs:/app/logs
+      - /:/host:ro
+    profiles:
+      - agent
+    networks:
+      - scanner-net
+
+volumes:
+  scanner-data:
+    driver: local
+  scanner-logs:
+    driver: local
+
+networks:
+  scanner-net:
+    driver: bridge
