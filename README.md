@@ -124,9 +124,13 @@ C:\projects\other\package.json | Matched: "axios": "0.30.4", "axios": "1.14.1"
 - **Windows:** PowerShell 5.1 or later (built into Windows 10/11)
 - **Linux/macOS:** Bash 4+, standard coreutils (`find`, `wc`, `cat`)
 
-## Version
+## Version History
 
-Last verified commit: `5508f43d2fde1377cd8af202b314f506da408146`
+| Date | Commit | Description |
+|---|---|---|
+| 2026-04-05 20:33:26 | `6326bfb2` | Add commit UID to README for version tracking |
+| 2026-04-05 20:30:38 | `5508f43d` | Update README with multi-term search description and process diagram |
+| 2026-04-05 20:15:07 | `efec3862` | Initial commit: package.json scanner for compromised npm dependencies |
 
 ## License
 
