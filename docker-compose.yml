@@ -1,3 +1,5 @@
+name: cyber-scanner-mcp
+
 services:
   # MCP Server — connect via Claude Code or Claude Desktop
   mcp-server:
