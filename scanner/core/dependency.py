@@ -8,6 +8,7 @@ checks for known vulnerabilities via the OSV.dev API.
 import json
 import os
 import re
+import tomllib
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -21,6 +22,7 @@ from scanner.core.logging_audit import audit
 _DEFAULT_FILE_TYPES = [
     "package.json",
     "requirements.txt",
+    "pyproject.toml",
     "Gemfile",
     "pom.xml",
     "go.mod",
@@ -142,11 +144,48 @@ def _parse_go_mod(file_path: str) -> list[dict[str, str]]:
     return packages
 
 
+def _parse_pyproject_toml(file_path: str) -> list[dict[str, str]]:
+    """Parse a pyproject.toml for dependencies."""
+    packages: list[dict[str, str]] = []
+    try:
+        with open(file_path, "rb") as fh:
+            data = tomllib.load(fh)
+        # PEP 621 [project.dependencies]
+        for dep in data.get("project", {}).get("dependencies", []):
+            match = re.match(r"^([A-Za-z0-9_][A-Za-z0-9._-]*)\s*(.*)?", dep)
+            if match:
+                name = match.group(1).strip()
+                version = match.group(2).strip() if match.group(2) else "*"
+                packages.append({"name": name, "version": version or "*"})
+        # PEP 621 [project.optional-dependencies]
+        for group_deps in data.get("project", {}).get("optional-dependencies", {}).values():
+            for dep in group_deps:
+                match = re.match(r"^([A-Za-z0-9_][A-Za-z0-9._-]*)\s*(.*)?", dep)
+                if match:
+                    name = match.group(1).strip()
+                    version = match.group(2).strip() if match.group(2) else "*"
+                    packages.append({"name": name, "version": version or "*"})
+        # Poetry [tool.poetry.dependencies]
+        for section in ("dependencies", "dev-dependencies"):
+            deps = data.get("tool", {}).get("poetry", {}).get(section, {})
+            for name, ver in deps.items():
+                if name == "python":
+                    continue
+                if isinstance(ver, str):
+                    packages.append({"name": name, "version": ver})
+                elif isinstance(ver, dict):
+                    packages.append({"name": name, "version": ver.get("version", "*")})
+    except Exception:
+        pass
+    return packages
+
+
 def _ecosystem_for_file(filename: str) -> str:
     """Map a dependency filename to its ecosystem identifier."""
     mapping = {
         "package.json": "npm",
         "requirements.txt": "PyPI",
+        "pyproject.toml": "PyPI",
         "Gemfile": "RubyGems",
         "pom.xml": "Maven",
         "go.mod": "Go",
@@ -329,6 +368,13 @@ def scan_dependencies(
                                 })
                         elif fname == "go.mod":
                             for pkg in _parse_go_mod(full_path):
+                                packages.append({
+                                    **pkg,
+                                    "ecosystem": ecosystem,
+                                    "source_file": full_path,
+                                })
+                        elif fname == "pyproject.toml":
+                            for pkg in _parse_pyproject_toml(full_path):
                                 packages.append({
                                     **pkg,
                                     "ecosystem": ecosystem,

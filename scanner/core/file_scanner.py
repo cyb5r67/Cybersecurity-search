@@ -207,7 +207,6 @@ def check_file(
     }
 
 
-@audit()
 def list_drives() -> list[str]:
     """Auto-detect available drives / mount points.
 
