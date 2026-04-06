@@ -105,7 +105,17 @@ cd /path/to/cybersecurity-scanner
 claude mcp add cyber-scanner-mcp -- python -m scanner.server
 ```
 
-Once configured, Claude can use all scanner tools natively in conversation.
+Once configured, Claude can use all scanner tools natively in conversation. Just describe what you need in plain English:
+
+```
+You: Scan all package.json files under /home/projects for compromised axios versions
+You: Check the TLS certificate on api.example.com port 8443
+You: Generate a CycloneDX SBOM for /opt/myapp and then run an OSCAL assessment against NIST 800-53
+You: Hash /etc/nginx, save it as a baseline called "nginx-prod", and compare it next week
+You: Run an nmap vulnerability scan on 192.168.1.0/24 ports 22,80,443
+```
+
+See [docs/MODULES.md](docs/MODULES.md) for full MCP examples alongside every tool.
 
 ### API Agent (Scheduled/Scripted)
 

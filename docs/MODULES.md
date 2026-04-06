@@ -25,6 +25,13 @@ Search files across all drives and filesystems for suspicious content strings. O
 
 Scan entire filesystems for files containing specific text. Uses multithreaded parallel scanning for performance.
 
+**Via Claude (MCP):**
+```
+Scan all package.json files for compromised axios version 0.30.4
+Search for eval( and exec( in all Python files under /home/projects
+Find any .env files containing "password" in /home, stop after 50 results
+```
+
 **CLI:**
 ```bash
 # Search all package.json files for compromised axios
@@ -74,6 +81,12 @@ scanner scan --terms "password" --pattern "*.env" --paths /home --max-results 50
 
 Check a single file for specific search terms. Useful for targeted checks without a full filesystem scan.
 
+**Via Claude (MCP):**
+```
+Check /home/project/package.json for compromised axios version 0.30.4
+Does this file contain any references to "0.30.4"? /path/to/package.json
+```
+
 **CLI:**
 ```bash
 scanner check-file /path/to/package.json --terms '"axios": "0.30.4"' --json
@@ -101,6 +114,12 @@ Status values: `"match"` (terms found), `"clean"` (no matches), `"error"` (file 
 
 Auto-detect all available drives and filesystems on the system.
 
+**Via Claude (MCP):**
+```
+What drives are available on this system?
+List all mounted filesystems
+```
+
 **CLI:**
 ```bash
 scanner list-drives --json
@@ -114,6 +133,12 @@ scanner list-drives --json
 ### find_suspicious_files
 
 Find files with suspicious names or extensions that may indicate malware or social engineering attacks.
+
+**Via Claude (MCP):**
+```
+Look for suspicious files in /home/downloads and /tmp
+Find any files with double extensions or hidden executables in /home
+```
 
 **CLI:**
 ```bash
@@ -141,6 +166,13 @@ Validate TLS certificates, test protocol versions, and audit certificate chains.
 ### check_tls
 
 Connect to a host and report TLS version, cipher suite, and full certificate details.
+
+**Via Claude (MCP):**
+```
+Check the TLS certificate on example.com
+What TLS version and cipher is api.example.com using on port 8443?
+Is the certificate for mysite.com expiring soon?
+```
 
 **CLI:**
 ```bash
@@ -196,6 +228,12 @@ scanner check-tls api.example.com --port 8443 --json
 
 Test which SSL/TLS protocol versions a host accepts. Critical for identifying servers that still support deprecated protocols.
 
+**Via Claude (MCP):**
+```
+What SSL/TLS versions does example.com support?
+Does example.com still accept TLS 1.0 or SSLv3?
+```
+
 **CLI:**
 ```bash
 scanner check-ssl-versions example.com --json
@@ -234,6 +272,12 @@ scanner check-ssl-versions example.com --json
 
 Batch scan certificates for multiple hosts at once. Produces a summary with counts of expired, expiring, and weak certificates.
 
+**Via Claude (MCP):**
+```
+Scan certificates for example.com, api.example.com, and mail.example.com on port 587
+Check all my production domains for expired or expiring certificates: web.example.com, api.example.com, cdn.example.com
+```
+
 **CLI:**
 ```bash
 scanner scan-certs example.com api.example.com mail.example.com:587 --json
@@ -261,6 +305,13 @@ scanner scan-certs example.com api.example.com mail.example.com:587 --json
 ### check_cert_chain
 
 Validate the full certificate chain from leaf to root. Detects issues like self-signed certificates, expired intermediates, and missing chain links.
+
+**Via Claude (MCP):**
+```
+Validate the full certificate chain for example.com
+Is example.com using a self-signed certificate?
+Check the certificate chain on api.example.com port 8443
+```
 
 **CLI:**
 ```bash
@@ -298,6 +349,14 @@ Port scanning, service detection, and vulnerability scanning using Nmap. Require
 ### nmap_scan
 
 Port scan a host or network range.
+
+**Via Claude (MCP):**
+```
+Do a quick port scan of 192.168.1.1
+Scan the 192.168.1.0/24 subnet for open ports
+Run a full port scan on 10.0.0.1 (all 65535 ports)
+Scan example.com on ports 22, 80, 443, and 8080
+```
 
 **CLI:**
 ```bash
@@ -341,6 +400,12 @@ scanner nmap example.com --ports 22,80,443,8080 --json
 
 Identify services and their versions running on open ports. Uses Nmap's `-sV` flag.
 
+**Via Claude (MCP):**
+```
+What services are running on 192.168.1.1 ports 22, 80, and 443?
+Detect service versions on the web server at 10.0.0.5
+```
+
 **CLI:**
 ```bash
 scanner nmap-services 192.168.1.1 --ports 22,80,443 --json
@@ -373,6 +438,12 @@ scanner nmap-services 192.168.1.1 --ports 22,80,443 --json
 ### nmap_vuln_scan
 
 Run Nmap's NSE vulnerability scripts against a target. Identifies known vulnerabilities in running services.
+
+**Via Claude (MCP):**
+```
+Run a vulnerability scan on 192.168.1.1 ports 80 and 443
+Check 10.0.0.5 for known vulnerabilities like Heartbleed
+```
 
 **CLI:**
 ```bash
@@ -413,6 +484,12 @@ Monitor files for unauthorized changes using cryptographic hashes. Create baseli
 
 Generate a cryptographic hash of a single file.
 
+**Via Claude (MCP):**
+```
+Hash /etc/passwd
+Get the SHA-512 hash of /path/to/binary
+```
+
 **CLI:**
 ```bash
 scanner hash-file /etc/passwd --json
@@ -439,6 +516,14 @@ scanner hash-file /path/to/binary --algorithm sha512 --json
 ### hash_directory
 
 Hash all files in a directory and optionally save as a named baseline for future comparison.
+
+**Via Claude (MCP):**
+```
+Hash all files in /etc/nginx
+Hash /etc/nginx and save it as a baseline called "nginx-config"
+Hash only the Python files in /home/project and save as baseline "project-py"
+Hash /usr/bin using SHA-512 and save as "system-bins"
+```
 
 **CLI:**
 ```bash
@@ -483,6 +568,12 @@ scanner hash-dir /usr/bin --algorithm sha512 --save-baseline system-bins --json
 
 Compare the current state of a directory against a saved baseline. Identifies added, removed, and modified files.
 
+**Via Claude (MCP):**
+```
+Compare /etc/nginx against the "nginx-config" baseline
+Have any files changed in /etc/nginx since I saved the baseline?
+```
+
 **CLI:**
 ```bash
 scanner compare-baseline /etc/nginx nginx-config --json
@@ -517,6 +608,12 @@ scanner compare-baseline /etc/nginx nginx-config --json
 ### verify_integrity
 
 Verify that all files in a baseline still match their recorded hashes, without needing to specify the directory.
+
+**Via Claude (MCP):**
+```
+Verify the integrity of the "nginx-config" baseline
+Do all files in the nginx-config baseline still match their original hashes?
+```
 
 **CLI:**
 ```bash
@@ -553,6 +650,12 @@ Analyze package dependency files and check for known vulnerabilities using the O
 ### analyze_package_json
 
 Deep inspection of a single `package.json` file for security red flags.
+
+**Via Claude (MCP):**
+```
+Analyze /path/to/package.json for security issues
+Check this package.json for suspicious install scripts: /home/project/package.json
+```
 
 **CLI:**
 ```bash
@@ -591,6 +694,13 @@ scanner analyze-package /path/to/package.json --json
 
 Find and parse all dependency files across the filesystem. Supports multiple package ecosystems.
 
+**Via Claude (MCP):**
+```
+Find all dependencies across the system
+Scan /home/projects and /opt/apps for dependency files
+List all npm and Python dependencies in /home/projects
+```
+
 **CLI:**
 ```bash
 # Scan everything
@@ -616,6 +726,7 @@ scanner scan-deps --file-types package.json requirements.txt --json
 |------|-----------|---------|
 | `package.json` | npm | JSON parsing |
 | `requirements.txt` | PyPI | Line-by-line with version specifiers |
+| `pyproject.toml` | PyPI | TOML parsing (PEP 621 + Poetry) |
 | `Gemfile` | RubyGems | Regex extraction |
 | `pom.xml` | Maven | XML/regex extraction |
 | `go.mod` | Go | Regex extraction |
@@ -637,6 +748,13 @@ scanner scan-deps --file-types package.json requirements.txt --json
 ### check_vulnerability
 
 Check a specific package version for known CVEs using the OSV.dev API.
+
+**Via Claude (MCP):**
+```
+Is axios 0.21.1 vulnerable to any known CVEs?
+Check lodash 4.17.15 for vulnerabilities
+Are there any known security issues with flask 2.0.0?
+```
 
 **CLI:**
 ```bash
@@ -683,6 +801,13 @@ Generate Software Bill of Materials documents in industry-standard formats.
 ### generate_sbom
 
 Discover all dependency files and produce an SBOM document.
+
+**Via Claude (MCP):**
+```
+Generate an SBOM for /home/projects
+Create an SPDX software bill of materials for /home/projects
+Generate a CycloneDX SBOM for /opt/app covering only npm and Python dependencies
+```
 
 **CLI:**
 ```bash
@@ -739,6 +864,12 @@ scanner generate-sbom --paths /opt/app --file-types package.json requirements.tx
 
 Convert an existing SBOM to a different format.
 
+**Via Claude (MCP):**
+```
+Convert the SBOM 20260406T023000Z_a1b2c3d4 to SPDX format
+Export that SBOM as SPDX
+```
+
 **CLI:**
 ```bash
 scanner export-sbom 20260406T023000Z_a1b2c3d4 --format spdx --json
@@ -754,6 +885,12 @@ scanner export-sbom 20260406T023000Z_a1b2c3d4 --format spdx --json
 ### list_sboms
 
 List all previously generated SBOMs.
+
+**Via Claude (MCP):**
+```
+List all SBOMs that have been generated
+What SBOMs do we have on file?
+```
 
 **CLI:**
 ```bash
@@ -784,6 +921,14 @@ Generate OSCAL (Open Security Controls Assessment Language) documents that map s
 ### generate_oscal_assessment
 
 Generate an OSCAL Assessment Results document from scan history, mapping findings to security controls.
+
+**Via Claude (MCP):**
+```
+Generate an OSCAL assessment using NIST 800-53
+Create a FedRAMP compliance assessment from recent scans
+Run an OSCAL assessment against ISO 27001 using scan IDs 1, 2, and 3
+Map our scan findings to NIST Cybersecurity Framework controls
+```
 
 **CLI:**
 ```bash
@@ -842,6 +987,12 @@ scanner generate-oscal-assessment --scan-ids 1 2 3 --json
 
 Convert a generated SBOM into an OSCAL Component Definition document.
 
+**Via Claude (MCP):**
+```
+Convert SBOM 20260406T023000Z_a1b2c3d4 into an OSCAL component definition
+Generate an OSCAL component document from the latest SBOM
+```
+
 **CLI:**
 ```bash
 scanner generate-oscal-component 20260406T023000Z_a1b2c3d4 --json
@@ -856,6 +1007,12 @@ scanner generate-oscal-component 20260406T023000Z_a1b2c3d4 --json
 ### map_to_controls
 
 Map finding types to security controls for a given framework. Useful for understanding what controls are affected.
+
+**Via Claude (MCP):**
+```
+What NIST 800-53 controls map to malicious code, weak TLS, and open ports?
+Which ISO 27001 controls cover known vulnerabilities?
+```
 
 **CLI:**
 ```bash
@@ -876,6 +1033,12 @@ scanner map-controls known_vulnerability --framework iso-27001 --json
 
 Export an OSCAL document in JSON or XML format.
 
+**Via Claude (MCP):**
+```
+Export OSCAL document a1b2c3d4-... as XML
+Convert that OSCAL assessment to XML format
+```
+
 **CLI:**
 ```bash
 scanner export-oscal a1b2c3d4-... --format xml --json
@@ -891,6 +1054,12 @@ scanner export-oscal a1b2c3d4-... --format xml --json
 ### list_oscal_documents
 
 List all generated OSCAL documents.
+
+**Via Claude (MCP):**
+```
+List all OSCAL documents
+What compliance reports have been generated?
+```
 
 **CLI:**
 ```bash
@@ -927,6 +1096,13 @@ Every tool execution records:
 
 Query past scan operations from the audit database.
 
+**Via Claude (MCP):**
+```
+Show me the last 10 scans
+What TLS checks have been run?
+Show scan history since April 1st
+```
+
 **CLI:**
 ```bash
 # Last 50 scans
@@ -953,6 +1129,13 @@ scanner history --date-from 2026-04-01 --json
 ### get_scan_stats
 
 Get summary statistics for scan operations.
+
+**Via Claude (MCP):**
+```
+Show me scan statistics for the last 30 days
+How many scans have been run this week?
+Give me a summary of scanning activity
+```
 
 **CLI:**
 ```bash
@@ -984,6 +1167,14 @@ scanner stats --days 7 --json
 ### configure_logging
 
 Enable or disable logging backends at runtime.
+
+**Via Claude (MCP):**
+```
+Enable API logging to https://my-webhook.example.com/logs
+Disable file logging
+What logging backends are currently enabled?
+Configure logging to send results to our webhook with API key xyz123
+```
 
 **CLI (via MCP only):**
 
