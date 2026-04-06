@@ -77,7 +77,14 @@ def list_modules() -> dict:
 _load_modules()
 
 if __name__ == "__main__":
+    import os
+
     print(f"Loaded modules: {list(_loaded_modules.values())}", file=sys.stderr)
     if _failed_modules:
         print(f"Unavailable: {_failed_modules}", file=sys.stderr)
-    mcp.run()
+
+    transport = os.environ.get("MCP_TRANSPORT", "streamable-http")
+    mcp.settings.host = os.environ.get("MCP_HOST", "0.0.0.0")
+    mcp.settings.port = int(os.environ.get("MCP_PORT", "8000"))
+
+    mcp.run(transport=transport)

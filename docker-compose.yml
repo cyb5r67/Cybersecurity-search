@@ -4,6 +4,8 @@ services:
     build: .
     container_name: cybersec-mcp
     command: python -m scanner.server
+    ports:
+      - "8000:8000"
     volumes:
       - scanner-data:/app/data
       - scanner-logs:/app/logs

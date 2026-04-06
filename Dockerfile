@@ -31,9 +31,12 @@ RUN groupadd -r scanner && useradd -r -g scanner -d /app scanner && \
     chown -R scanner:scanner /app
 USER scanner
 
+# Expose MCP server port
+EXPOSE 8000
+
 # Health check via CLI
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
     CMD python -m scanner.cli list-drives --json || exit 1
 
-# Default: run MCP server
+# Default: run MCP server (HTTP transport for Docker)
 CMD ["python", "-m", "scanner.server"]
